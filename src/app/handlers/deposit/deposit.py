@@ -12,6 +12,7 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
+from app.services.user.user import UserService
 from app.utils.functions.build_deposit_dialog import build_deposit_dialog_text
 
 
@@ -69,8 +70,8 @@ async def send_invoice_handler(callback: CallbackQuery, callback_data: PaymentCa
 
 
 @user_router.message(Command(commands=['deposit']))
-async def payments(message: Message, bot: Bot):
-    current_balance = (await bot.get_my_star_balance()).amount
+async def payments(message: Message, bot: Bot, user_service: UserService):
+    current_balance = (await user_service.get_user(message.from_user.id)).balance
 
     await message.answer(build_deposit_dialog_text(current_balance), reply_markup=payment_keyboard())
     
