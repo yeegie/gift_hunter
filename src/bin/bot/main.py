@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 
-from app.handlers.routers import user_router, admin_router
+from app.handlers import routers
 
 from app.infrastructure.bootstrap.runner import init_app
 from app.infrastructure.config import RootConfig
@@ -41,8 +41,9 @@ async def on_startup(bot: Bot, dispatcher: Dispatcher):
     logger.info(f'[X] Middlewares included')
 
     # Include routers
-    dispatcher.include_router(user_router)
-    dispatcher.include_router(admin_router)
+    dispatcher.include_router(routers.user_router)
+    dispatcher.include_router(routers.admin_router)
+    dispatcher.include_router(routers.payment_router)
     logger.info(f'[X] Routers included')
 
     # Final log
