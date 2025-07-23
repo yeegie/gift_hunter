@@ -20,7 +20,12 @@ class GiftObserver():
         "5170521118301225164", "6028601630662853006"
     }  # 💝 🧸 🎁 🌹 🎂 💐 🚀 🏆 💍 💎 🍾
 
-    def __init__(self, bot: Bot, gift_notifyer: GiftNotifyer, logger: logging.Logger):
+    def __init__(
+        self,
+        bot: Bot,
+        gift_notifyer: GiftNotifyer,
+        logger: logging.Logger,
+    ):
         self.__bot = bot
         self.__notifyer = gift_notifyer
 
@@ -31,14 +36,14 @@ class GiftObserver():
     async def get_all_gifts(self) -> List[Gift]:
         return (await self.__bot.get_available_gifts()).gifts
 
-    async def get_new_gifts(self, notify: bool = False) -> List[Gift]:
+    async def get_new_gifts(self, notify_users: bool = False) -> List[Gift]:
         filtered_gifts = [gift for gift in await self.get_all_gifts() if gift.id not in self.__default_gift_ids]
 
-        # if filtered_gifts:
-        #     self.__notifyer.notify(filtered_gifts)
+        if filtered_gifts and notify_users:
+            self.__notifyer.notify(filtered_gifts)
 
         return filtered_gifts
-    
+
     def stop_auto_check(self) -> None:
         self.__autocheck_running = False
 
@@ -53,9 +58,10 @@ class GiftObserver():
                     self.__logger.info(f"[GiftObserver] New gifts")
                     self.stop_auto_check()
                     return new_gifts
-                
-                self.__logger.info(f"[GiftObserver] New gifts not found delay {delay}")
-                
+
+                self.__logger.info(
+                    f"[GiftObserver] New gifts not found delay {delay}")
+
                 await asyncio.sleep(delay)
             except Exception as e:
                 self.__logger.error(f"[GiftObserver] Check gifts error {e}")
