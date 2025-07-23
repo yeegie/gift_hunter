@@ -3,6 +3,8 @@ from aiogram.types import InlineKeyboardButton
 
 from app.helpers.fabric.controls import ControlsCallback
 
+from app.helpers.texts import menu
+
 
 def menu_keyboard():
     builder = InlineKeyboardBuilder()
@@ -20,6 +22,6 @@ def menu_keyboard():
 
 def to_menu():
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text="Открыть меню", callback_data=ControlsCallback(action="back_main_menu", value="").pack()))
+    builder.add(InlineKeyboardButton(text=menu.MAIN_MENU, callback_data=ControlsCallback(action="back_main_menu", value="").pack()))
 
     return builder.as_markup(resize_keyboard=True)
