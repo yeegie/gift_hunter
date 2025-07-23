@@ -11,7 +11,7 @@ async def success_payment_handler(message: Message, user_service: UserService):
     await user_service.increase_balance(user_id=message.from_user.id, amount=message.successful_payment.total_amount)
 
     user = await user_service.get_user(message.from_user.id)
-    await message.answer(text=f"Баланс {user.balance} ⭐️", reply_markup=to_menu())
+    await message.answer(text=f"Ваш баланс: <b>{user.balance}</b> ⭐️", reply_markup=to_menu())
 
 
 @payment_router.pre_checkout_query()

@@ -1,3 +1,4 @@
+from .payment_handlers import *
 from . import sandbox
 from . import welcome
 from .deposit import *
