@@ -1,0 +1,29 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+.env
+.venv/
+venv/
+env/
+.idea/
+.vscode/
+
+README.md
+
+# Git
+.git
+.gitignore
+
+# Docker artifacts
+Dockerfile
+.dockerignore
+
+# Тесты (если не нужны внутри контейнера)
+tests/
+*.log
+
+src/app/user_service/
