@@ -28,13 +28,13 @@ class UserService:
 
     async def list_users(self) -> List[UserSchema]:
         return await self.__repository.all()
-    
+
     async def change_settings(self, user_id: int, settings: UserSettingsUpdateSchema) -> bool:
         user = await self.get_user(user_id)
 
         if not user:
             return False
-        
+
         update_dto = UserUpdateSchema(settings=settings)
         return await self.update_user(user_id, update_dto)
 
@@ -43,7 +43,7 @@ class UserService:
 
         if not user:
             return False
-        
+
         new_balance = (user.balance or 0) + amount
         update_dto = UserUpdateSchema(balance=new_balance)
 
@@ -54,8 +54,12 @@ class UserService:
 
         if not user or (user.balance or 0) < amount:
             return False
-        
+
         new_balance = user.balance - amount
         update_dto = UserUpdateSchema(balance=new_balance)
-        
+
         return await self.update_user(user_id, update_dto)
+
+    async def get_all_users_by_notify(self, notify: bool) -> List[UserSchema]:
+        users = await self.list_users()
+        return [user for user in users if user.notify == notify]
