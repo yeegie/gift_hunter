@@ -20,7 +20,7 @@ from app.gift_service import GiftObserver, GiftNotifyer, GiftBuyer
 from app.services.user.user import UserService
 
 from app.adapters.session_creator import SqlalchemySessionCreator
-from app.utils.database.create_schemas import generate_schema_from_session
+from app.utils.create_schemas import generate_schema_from_session
 
 
 async def on_startup(bot: Bot, dispatcher: Dispatcher):
