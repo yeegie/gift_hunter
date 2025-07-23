@@ -2,7 +2,9 @@ __all__ = ["init_app"]
 
 import asyncio
 
+from app.logger import get_logger
 import logging
+
 from app.infrastructure.bootstrap.config import get_config
 from app.infrastructure.config import RootConfig
 
@@ -20,8 +22,7 @@ def init_app(
     database_config_path: str,
     webhook_config_path: str,
 ) -> None:
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(level=logging.INFO)
+    logger = get_logger()
 
     # Config
     config = get_config(
