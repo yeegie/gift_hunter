@@ -3,7 +3,7 @@ from aiogram.types import Message, LabeledPrice, PreCheckoutQuery
 from aiogram.filters import Command
 
 from app.handlers.routers import user_router
-from app.helpers.keyboards.payments import payment_keyboard, payment_confirm_keyboard
+from app.helpers.keyboards.inline.payments import payment_keyboard, payment_confirm_keyboard
 
 from app.helpers.fabric.payment import PaymentCallback
 from app.helpers.fabric.controls import ControlsCallback

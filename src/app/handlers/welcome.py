@@ -6,7 +6,7 @@ import random
 
 from app.handlers.routers import user_router
 
-from app.helpers.keyboards.controls.main_menu import to_menu
+from app.helpers.keyboards.inline.controls.main_menu import to_menu
 
 
 @user_router.message(CommandStart())

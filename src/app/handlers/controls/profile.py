@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 
 from app.helpers.fabric.controls import ControlsCallback
-from app.helpers.keyboards.controls.main_menu import menu_keyboard, to_menu
+from app.helpers.keyboards.inline.controls.main_menu import menu_keyboard, to_menu
 
 from app.handlers.routers import user_router
 

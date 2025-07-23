@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from app.helpers.fabric.controls import ControlsCallback
-from app.helpers.keyboards.controls.settings import to_settings
+from app.helpers.keyboards.inline.controls.settings import to_settings
 
 from app.helpers.states.confirm_value import ConfirmAmountStates
 

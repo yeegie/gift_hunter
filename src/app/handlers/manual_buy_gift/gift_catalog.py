@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 
 from app.handlers.routers import user_router
-from app.helpers.keyboards.gifts_catalog.keyboard import gift_catalog_keyboard
+from app.helpers.keyboards.inline.gifts_catalog.keyboard import gift_catalog_keyboard
 
 from app.helpers.fabric.gift import GiftCallback
 from app.helpers.fabric.controls import ControlsCallback
