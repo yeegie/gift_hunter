@@ -17,6 +17,7 @@ from logging import Logger
 from app.middlewares.manage_users import ManageUserMiddleware
 
 from app.gift_service import GiftObserver, GiftNotifyer, GiftBuyer
+from app.services.user.user import UserService
 
 from app.adapters.session_creator import SqlalchemySessionCreator
 from app.utils.database.create_schemas import generate_schema_from_session
@@ -77,7 +78,7 @@ def main():
     # Gift
     logger = ioc.get(Logger)
 
-    gift_notifyer = GiftNotifyer(bot)
+    gift_notifyer = GiftNotifyer(bot, user_service=ioc.get(UserService))
     gift_observer = GiftObserver(bot, gift_notifyer, logger)
     gift_buyer = GiftBuyer(bot, gift_observer, logger)
 
