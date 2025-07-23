@@ -4,6 +4,7 @@ from aiogram.filters import Command
 
 from app.handlers.routers import user_router
 from app.helpers.keyboards.inline.payments import payment_keyboard, payment_confirm_keyboard
+from app.helpers.keyboards.inline.universal.clear_state import clear_state_keyboard
 
 from app.helpers.fabric.payment import PaymentCallback
 from app.helpers.fabric.controls import ControlsCallback
@@ -22,7 +23,7 @@ class PaymentStates(StatesGroup):
 # "Другая сумма"
 @user_router.callback_query(PaymentCallback.filter(F.action == "buy_other_value"))
 async def buy_other_value(callback: CallbackQuery, bot: Bot, state: FSMContext):
-    await callback.message.answer("Введи сумму (целое число)")
+    await callback.message.answer("Введи сумму (целое число)", reply_markup=clear_state_keyboard())
     await state.set_state(PaymentStates.waiting_for_custom_amount)
     await bot.answer_callback_query(callback.id)
 
