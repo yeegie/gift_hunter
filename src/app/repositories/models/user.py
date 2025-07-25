@@ -34,7 +34,15 @@ class User(Base):
     settings = Column(
         MutableDict.as_mutable(JSONB),
         server_default=expression.text("'{}'::jsonb"),
-        nullable=False
+        nullable=False,
+        default={
+            "auto_buy": False,
+            "price_min": 15,
+            "price_max": 100,
+            "supply_limit": 100000,
+            "cycles": 1,
+            "quantity": 1,
+        }
     )
 
     __table_args__ = (
@@ -56,14 +64,3 @@ class User(Base):
     @property
     def is_admin(self) -> bool:
         return self.type == UserType.ADMIN
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if not self.settings:
-            self.settings = {
-                "price_min": 15,
-                "price_max": 100,
-                "supply_limit": 100000,
-                "cycles": 1,
-                "quantity": 1,
-            }

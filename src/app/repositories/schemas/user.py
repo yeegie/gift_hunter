@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class UserSettingsSchema(BaseModel):
+    auto_buy: bool = False
     price_min: int = 0
     price_max: int = 0
     supply_limit: int = 0
@@ -11,6 +12,7 @@ class UserSettingsSchema(BaseModel):
     quantity: int = 0
 
 class UserSettingsUpdateSchema(BaseModel):
+    auto_buy: Optional[bool] = None
     price_min: Optional[int] = None
     price_max: Optional[int] = None
     supply_limit: Optional[int] = None
