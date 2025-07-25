@@ -1,6 +1,8 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton
 
+from app.helpers.texts import menu
+
 from app.helpers.fabric.payment import PaymentCallback
 from app.helpers.fabric.controls import ControlsCallback
 
@@ -16,7 +18,7 @@ def payment_keyboard(from_main_menu: bool = False):
     builder.row(InlineKeyboardButton(text="Другая сумма", callback_data=PaymentCallback(action="buy_other_value", value=999).pack()))
 
     if from_main_menu:
-        builder.row(InlineKeyboardButton(text="🔙 Назад", callback_data=ControlsCallback(action="back_main_menu", value="").pack()))
+        builder.row(InlineKeyboardButton(text=menu.MAIN_MENU, callback_data=ControlsCallback(action="back_main_menu", value="").pack()))
 
     return builder.as_markup(resize_keyboard=True)
 

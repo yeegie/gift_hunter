@@ -2,6 +2,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, Gift
 from typing import List
 
+from app.helpers.texts import menu
+from app.helpers.fabric.controls import ControlsCallback
+
 from app.helpers.fabric.gift import GiftCallback
 
 
@@ -16,5 +19,7 @@ def gift_catalog_keyboard(gifts: List[Gift]):
 
         # !!! ЦЕНА В CALLBACK ЧЕРЕЗ ДЕФИС value=gift_id-PRICE
         builder.row(InlineKeyboardButton(text=f"{gift.sticker.emoji} — {price} ⭐️ {count}", callback_data=GiftCallback(action="buy_gift", value=f"{gift.id}-{gift.star_count}").pack()))
+
+    builder.row(InlineKeyboardButton(text=menu.MAIN_MENU, callback_data=ControlsCallback(action="back_main_menu", value="").pack()))
 
     return builder.as_markup(resize_keyboard=True)
