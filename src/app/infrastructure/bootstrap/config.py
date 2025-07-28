@@ -17,15 +17,18 @@ def get_config(
     telegram_config: str,
     database_config: str,
     webhook_config: str,
+    payment_config: str,
 ) -> RootConfig:
     telegram_data = load_yaml_file(telegram_config).get('telegram', {})
     database_data = load_yaml_file(database_config).get('database', {})
     webhook_data = load_yaml_file(webhook_config).get('webhook', {})
+    payment_data = load_yaml_file(payment_config).get('payment', {})
 
     config_data = {
         "telegram": telegram_data,
         "database": database_data,
         "webhook": webhook_data,
+        "payment": payment_data,
     }
 
     return RootConfig(**config_data)

@@ -21,6 +21,7 @@ def init_app(
     telegram_config_path: str,
     database_config_path: str,
     webhook_config_path: str,
+    payment_config_path: str,
 ) -> None:
     logger = get_logger()
 
@@ -29,6 +30,7 @@ def init_app(
         telegram_config=telegram_config_path,
         database_config=database_config_path,
         webhook_config=webhook_config_path,
+        payment_config=payment_config_path,
     )
 
     session_creator = SqlalchemySessionCreator((
