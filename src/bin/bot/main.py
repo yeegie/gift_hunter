@@ -43,14 +43,16 @@ async def on_startup(bot: Bot, dispatcher: Dispatcher):
     # Include routers
     dispatcher.include_router(routers.user_router)
     dispatcher.include_router(routers.admin_router)
-    dispatcher.include_router(routers.payment_router)
+    
+    if config.payment.enabled:
+        dispatcher.include_router(routers.payment_router)
+    else:
+        logger.warning('[!] Payment system is disabled, payment router will not be included.')
+
     logger.info(f'[X] Routers included')
 
     # Final log
     logger.info(f'[!] Bot stated -- https://t.me/{(await bot.get_me()).username}')
-
-    # Notify owner
-    await bot.send_message(423420323, "⚙️ Бот запущен")
 
 
 async def on_shutdown(bot: Bot):
@@ -63,6 +65,7 @@ def main():
         webhook_config_path="configs/webhook.yml",
         telegram_config_path="configs/telegram.yml",
         database_config_path="configs/database.yml",
+        payment_config_path="configs/payment.yml",
     )
 
     config = ioc.get(RootConfig)
