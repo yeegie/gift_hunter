@@ -5,6 +5,9 @@ from app.helpers.fabric.controls import ControlsCallback
 
 from app.helpers.texts import menu
 
+from app.utils.ioc import ioc
+from app.infrastructure.config.RootConfig import RootConfig
+
 
 def menu_keyboard(auto_buy_enabled):
     builder = InlineKeyboardBuilder()
@@ -18,7 +21,7 @@ def menu_keyboard(auto_buy_enabled):
         InlineKeyboardButton(text="⚙️ Настройки автопокупки", callback_data=ControlsCallback(action="auto_buy_settings", value="").pack())
     )
     builder.row(InlineKeyboardButton(text="🎁 Каталог", callback_data=ControlsCallback(action="show_catalog", value="").pack()))
-    builder.row(InlineKeyboardButton(text="🆘 Связь", callback_data=ControlsCallback(action="show_support", value="").pack()))
+    builder.row(InlineKeyboardButton(text="🆘 Связь", url=f"https://t.me/{ioc.get(RootConfig).telegram.support}"))
 
     return builder.as_markup(resize_keyboard=True)
 
