@@ -12,7 +12,10 @@ from app.adapters.session_creator import SqlalchemySessionCreator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.user.repository import UserRepository
+from app.repositories.settings.repository import SettingsRepository
+
 from app.services.user.user import UserService
+from app.services.settings.settings import SettingsService
 
 from app.utils.ioc import ioc
 
@@ -43,14 +46,20 @@ def init_app(
 
     # Repositories
     user_repository = UserRepository(session, logger)
+    settings_repository = SettingsRepository(session, logger)
 
     # Services
-    user_service = UserService(user_repository)
+    user_service = UserService(user_repository, settings_repository)
+    settings_service = SettingsService(settings_repository)
 
     # Store in IOC
     ioc.set(logging.Logger, logger)
     ioc.set(RootConfig, config)
     ioc.set(AsyncSession, session)
     ioc.set(SqlalchemySessionCreator, session_creator)
+
     ioc.set(UserRepository, user_repository)
+    ioc.set(SettingsRepository, settings_repository)
+
     ioc.set(UserService, user_service)
+    ioc.set(SettingsService, settings_service)
