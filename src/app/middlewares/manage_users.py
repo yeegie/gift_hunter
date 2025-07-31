@@ -6,9 +6,12 @@ from aiogram.types import Message, CallbackQuery
 from app.utils.ioc import ioc
 
 from app.services.user.user import UserService
-from app.repositories.schemas.user import (
-    UserCreateSchema
-)
+from app.services.settings.settings import SettingsService
+
+from app.repositories.models.user import User
+
+from app.repositories.schemas.user import UserCreateSchema
+from app.repositories.schemas.settings import SettingsCreateSchema
 
 
 class ManageUserMiddleware(BaseMiddleware):
@@ -19,6 +22,7 @@ class ManageUserMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
         user_service = ioc.get(UserService)
+        setting_service = ioc.get(SettingsService)
 
         user = await user_service.get_user(event.from_user.id)
 
@@ -32,7 +36,7 @@ class ManageUserMiddleware(BaseMiddleware):
             bot: Bot = data['bot']
             if user is None:
                 # New user
-                await user_service.create_user(
+                await user_service.create_user_with_settings(
                     UserCreateSchema(
                         user_id=event.from_user.id,
                         fullname=event.from_user.full_name,

@@ -4,6 +4,8 @@ from typing import Optional, List
 from app.repositories.user.repository import UserRepository
 from app.repositories.settings.repository import SettingsRepository
 
+from app.repositories.models.user import User
+
 from app.repositories.schemas.user import (
     UserSchema,
     UserCreateSchema,
@@ -20,10 +22,10 @@ class UserService:
         self.__user_repository = repository
         self.__settings_repository = settings_repository
 
-    async def create_user(self, dto: UserCreateSchema) -> UserSchema:
+    async def create_user(self, dto: UserCreateSchema) -> User:
         return await self.__user_repository.create(dto)
 
-    async def create_user_with_settings(self, user_dto: UserCreateSchema) -> UserSchema:
+    async def create_user_with_settings(self, user_dto: UserCreateSchema) -> User:
         user = await self.__user_repository.create(user_dto)
         await self.__settings_repository.create(SettingsCreateSchema(user_id=user.user_id))
         return await self.get_user(user.user_id)
@@ -31,7 +33,7 @@ class UserService:
     async def change_user_settings(self, user_id: int, settings_dto: SettingsCreateSchema) -> bool:
         return await self.__settings_repository.update(user_id, settings_dto)
 
-    async def get_user(self, user_id: int) -> Optional[UserSchema]:
+    async def get_user(self, user_id: int) -> Optional[User]:
         return await self.__user_repository.get(user_id)
 
     async def update_user(self, user_id: int, dto: UserUpdateSchema) -> bool:
@@ -40,7 +42,7 @@ class UserService:
     async def delete_user(self, user_id: int) -> bool:
         return await self.__user_repository.delete(user_id)
 
-    async def list_users(self) -> List[UserSchema]:
+    async def list_users(self) -> List[User]:
         return await self.__user_repository.all()
 
     async def increase_balance(self, user_id: int, amount: int) -> bool:
@@ -65,6 +67,6 @@ class UserService:
 
         return await self.update_user(user_id, update_dto)
 
-    async def get_all_users_by_notify(self, notify: bool) -> List[UserSchema]:
+    async def get_all_users_by_notify(self, notify: bool) -> List[User]:
         users = await self.list_users()
         return [user for user in users if user.notify == notify]
