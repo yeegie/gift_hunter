@@ -14,7 +14,7 @@ def menu_keyboard(auto_buy_enabled):
 
     auto_buy_label = "🟢 Автопокупка" if auto_buy_enabled else "🔴 Автопокупка"
 
-    builder.row(InlineKeyboardButton(text=auto_buy_label, callback_data=ControlsCallback(action="", value="").pack()))
+    builder.row(InlineKeyboardButton(text=auto_buy_label, callback_data=ControlsCallback(action="auto_buy_status", value="").pack()))
     builder.row(InlineKeyboardButton(text="👤 Профиль", callback_data=ControlsCallback(action="show_profile", value="").pack()))
     builder.row(
         InlineKeyboardButton(text="⭐️ Пополнить баланс", callback_data=ControlsCallback(action="show_deposit_dialog", value="").pack()),
