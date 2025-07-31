@@ -9,7 +9,10 @@ from app.repositories.schemas.user import (
     UserCreateSchema,
     UserUpdateSchema,
 )
-from app.repositories.schemas.settings import SettingsCreateSchema
+from app.repositories.schemas.settings import (
+    SettingsCreateSchema,
+    SettingsUpdateSchema
+)
 
 
 class UserService:
@@ -24,6 +27,9 @@ class UserService:
         user = await self.__user_repository.create(user_dto)
         await self.__settings_repository.create(SettingsCreateSchema(user_id=user.user_id))
         return await self.get_user(user.user_id)
+    
+    async def change_user_settings(self, user_id: int, settings_dto: SettingsCreateSchema) -> bool:
+        return await self.__settings_repository.update(user_id, settings_dto)
 
     async def get_user(self, user_id: int) -> Optional[UserSchema]:
         return await self.__user_repository.get(user_id)
