@@ -60,6 +60,7 @@ class SettingsRepository(BaseSettingsRepository):
 
         # Update only not-none fields
         for field, value in dto.model_dump(exclude_unset=True).items():
+            self.__logger.debug(f"{settings}, field: {field}={value}")
             setattr(settings, field, value)
 
         try:
