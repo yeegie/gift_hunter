@@ -3,7 +3,8 @@ def build_settings_text(
     min_price: int,
     max_price: int,
     supply_limit: int,
-    cycles: int
+    cycles: int,
+    quantity: int
 ) -> str:
     return (
         f"⚙️ <b>Настройки</b>\n"
@@ -19,4 +20,7 @@ def build_settings_text(
         f"\n"
         f"🔄 <b>Количество циклов</b>\n"
         f"  └─ {cycles}\n"
+        f"\n"
+        f"🔢 <b>Сколько раз купить</b>\n"
+        f"  └─ {quantity}\n"
     )
