@@ -1,16 +1,24 @@
 __all__ = ["UserRepository"]
 
-from .CrudUserRepository import CrudUserRepository
+from .UserRepository import UserRepository
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from sqlalchemy.exc import SQLAlchemyError
-from app.repositories.schemas.user import UserSchema, UserCreateSchema, UserUpdateSchema
-from typing import Optional, List
-from logging import Logger
+from sqlalchemy.orm import selectinload
+
 from app.repositories.models import User
+from app.repositories.schemas.user import (
+    UserCreateSchema,
+    UserUpdateSchema
+)
+
+from typing import Optional, List
+
+from logging import Logger
 
 
-class UserRepository(CrudUserRepository):
+class UserRepository(UserRepository):
     def __init__(self, session: AsyncSession, logger: Logger) -> None:
         self.__session = session
         self.__logger = logger
@@ -19,6 +27,74 @@ class UserRepository(CrudUserRepository):
         await self.__session.commit()
         await self.__session.refresh(instance)
 
+    async def create(self, dto: UserCreateSchema) -> User:
+        user = User(
+            user_id=dto.user_id,
+            fullname=dto.fullname,
+            username=dto.username
+        )
+        self.__session.add(user)
+        await self.__commit_and_refresh(user)
+        
+        self.__logger.info(f"- [USER] user_id={user.user_id} CREATED")
+        return user
+
+    async def get(self, user_id: int) -> Optional[User]:
+        result = await self.__session.execute(
+            select(User)
+            .options(selectinload(User.settings))
+            .where(User.user_id == user_id)
+        )
+        return result.scalar_one_or_none()
+
+    async def update(self, user_id: int, dto: UserUpdateSchema) -> bool:
+        user = await self.get(user_id)
+
+        if not user:
+            return False
+
+        # Update only not-none fields
+        for field, value in dto.model_dump(exclude_unset=True).items():
+            setattr(user, field, value)
+
+        try:
+            await self.__commit_and_refresh(user)
+            self.__logger.info(f"- [USER] user_id={user_id} UPDATED")
+            return True
+        except SQLAlchemyError as ex:
+            self.__logger.error(f"- [USER] UPDATE ERROR: {ex}")
+            await self.__session.rollback()
+            return False
+
+    async def delete(self, user_id: int) -> bool:
+        try:
+            result = await self.__session.execute(
+                delete(User).where(User.id == id)
+            )
+            await self.__session.commit()
+            return result.rowcount > 0  # Return True if deleted
+        except SQLAlchemyError as ex:
+            self.__logger.error(f"- [USER] DELETION ERROR: {ex}")
+            await self.__session.rollback()
+            return False
+
+    async def all(self) -> List[User]:
+        try:
+            result = await self.__session.execute(select(User))
+            return result.scalars().all()
+        except SQLAlchemyError as ex:
+            self.__logger.error(f"[USER] FETCH ALL ERROR: {ex}")
+            return []
+    
+    async def update_settings(self, user_id: int, dto: UserUpdateSchema) -> bool:
+        user = self.read(user_id)
+
+        if user is None:
+            return False
+        
+        
+        return True
+    
     async def change_balance(self, user_id: int, amount: int) -> bool:
         """
         Надёжно изменить баланс пользователя:
@@ -60,66 +136,3 @@ class UserRepository(CrudUserRepository):
             await self.__session.rollback()
             self.__logger.error(f"- [USER] BALANCE CHANGE ERROR: {ex}")
             return False
-
-    async def create(self, dto: UserCreateSchema) -> UserSchema:
-        user = User(
-            user_id=dto.user_id,
-            fullname=dto.fullname,
-            username=dto.username
-        )
-
-        self.__session.add(user)
-        await self.__commit_and_refresh(user)
-        self.__logger.error(f"- [USER] user_id={user.user_id} CREATED")
-        return user.to_schema()
-
-    async def read(self, user_id: int) -> Optional[UserSchema]:
-        result = await self.__session.execute(select(User).where(User.user_id == user_id))
-        user = result.scalar()
-
-        return user.to_schema() if user else None
-
-    async def update(self, user_id: int, dto: UserUpdateSchema) -> bool:
-        result = await self.__session.execute(select(User).where(User.user_id == user_id))
-        user = result.scalar()
-
-        if not user:
-            return False
-
-        # Обновляем поля, если они переданы
-        if dto.fullname is not None:
-            user.fullname = dto.fullname
-        if dto.username is not None:
-            user.username = dto.username
-        if dto.type is not None:
-            user.type = dto.type
-        if dto.balance is not None:
-            user.balance = dto.balance
-        if dto.settings is not None:
-            user.settings = dto.settings.model_dump()
-
-        try:
-            await self.__commit_and_refresh(user)
-            self.__logger.info(f"- [USER] user_id={user_id} UPDATED")
-            return True
-        except SQLAlchemyError as ex:
-            self.__logger.error(f"- [USER] UPDATE ERROR: {ex}")
-            await self.__session.rollback()
-            return False
-
-    async def delete(self, user_id: int) -> bool:
-        try:
-            result = await self.__session.execute(
-                delete(User).where(User.id == id)
-            )
-            await self.__session.commit()
-            return result.rowcount > 0  # Return True if deleted
-        except SQLAlchemyError as ex:
-            self.__logger.error(f"- [USER] DELETION ERROR: {ex}")
-            await self.__session.rollback()
-            return False
-
-    async def all(self) -> List[UserSchema]:
-        result = await self.__session.execute(select(User))
-        users = result.scalars().all()
-        return [user.to_schema() for user in users]

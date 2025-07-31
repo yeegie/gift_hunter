@@ -8,7 +8,7 @@ class CrudRepository(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def read(self, user_id: int) -> Optional[any]:
+    async def get(self, user_id: int) -> Optional[any]:
         raise NotImplementedError()
 
     @abstractmethod

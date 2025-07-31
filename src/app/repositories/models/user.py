@@ -3,7 +3,8 @@ __all__ = ["User"]
 import datetime
 from functools import partial
 
-from sqlalchemy import Column, Integer, String, DateTime, Index, BigInteger
+from sqlalchemy import Column, Integer, String, DateTime, Index, BigInteger, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.sql import expression
@@ -26,23 +27,14 @@ class User(Base):
 
     # Role & metadata
     type = Column(String(32), default=UserType.USER, nullable=False)
-    register_at = Column(DateTime, default=partial(
-        datetime.datetime.utcnow), nullable=False)
+    register_at = Column(DateTime, default=partial(datetime.datetime.now), nullable=False)
 
-    # App-specific
     balance = Column(Integer, default=0, nullable=False)
-    settings = Column(
-        MutableDict.as_mutable(JSONB),
-        server_default=expression.text("'{}'::jsonb"),
-        nullable=False,
-        default={
-            "auto_buy": False,
-            "price_min": 15,
-            "price_max": 100,
-            "supply_limit": 100000,
-            "cycles": 1,
-            "quantity": 1,
-        }
+
+    # Settings
+    settings = relationship(
+        "Settings", back_populates="user",
+        uselist=False, cascade="all, delete-orphan"
     )
 
     __table_args__ = (
@@ -58,7 +50,7 @@ class User(Base):
             type=self.type,
             register_at=self.register_at,
             balance=self.balance,
-            settings=self.settings
+            settings=self.settings.to_schema() if self.settings else None
         )
 
     @property

@@ -2,41 +2,40 @@ __all__ = ["UserService"]
 
 from typing import Optional, List
 from app.repositories.user.repository import UserRepository
+from app.repositories.settings.repository import SettingsRepository
+
 from app.repositories.schemas.user import (
     UserSchema,
     UserCreateSchema,
     UserUpdateSchema,
-    UserSettingsUpdateSchema
 )
+from app.repositories.schemas.settings import SettingsCreateSchema
 
 
 class UserService:
-    def __init__(self, repository: UserRepository):
-        self.__repository = repository
+    def __init__(self, repository: UserRepository, settings_repository: SettingsRepository):
+        self.__user_repository = repository
+        self.__settings_repository = settings_repository
 
     async def create_user(self, dto: UserCreateSchema) -> UserSchema:
-        return await self.__repository.create(dto)
+        return await self.__user_repository.create(dto)
+
+    async def create_user_with_settings(self, user_dto: UserCreateSchema) -> UserSchema:
+        user = await self.__user_repository.create(user_dto)
+        await self.__settings_repository.create(SettingsCreateSchema(user_id=user.user_id))
+        return await self.get_user(user.user_id)
 
     async def get_user(self, user_id: int) -> Optional[UserSchema]:
-        return await self.__repository.read(user_id)
+        return await self.__user_repository.get(user_id)
 
     async def update_user(self, user_id: int, dto: UserUpdateSchema) -> bool:
-        return await self.__repository.update(user_id, dto)
+        return await self.__user_repository.update(user_id, dto)
 
     async def delete_user(self, user_id: int) -> bool:
-        return await self.__repository.delete(user_id)
+        return await self.__user_repository.delete(user_id)
 
     async def list_users(self) -> List[UserSchema]:
-        return await self.__repository.all()
-
-    async def change_settings(self, user_id: int, settings: UserSettingsUpdateSchema) -> bool:
-        user = await self.get_user(user_id)
-
-        if not user:
-            return False
-
-        update_dto = UserUpdateSchema(settings=settings)
-        return await self.update_user(user_id, update_dto)
+        return await self.__user_repository.all()
 
     async def increase_balance(self, user_id: int, amount: int) -> bool:
         user = await self.get_user(user_id)
