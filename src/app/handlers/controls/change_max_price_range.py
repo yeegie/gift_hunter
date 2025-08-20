@@ -9,7 +9,7 @@ from app.services.user.user import UserService
 from app.repositories.schemas.user import UserSchema
 from app.repositories.schemas.settings import SettingsUpdateSchema
 
-from app.utils.functions.build_settings import build_settings_text
+from app.helpers.prepared_messages.send_settings_menu import send_settings_menu
 from app.helpers.keyboards.inline.controls.settings import controls_keyboard
 
 from app.handlers.routers import user_router
@@ -58,11 +58,4 @@ async def process_custom_max_price(message: Message, state: FSMContext, user_ser
     )
 
     await state.clear()
-    await message.answer(build_settings_text(
-        auto_buy_current_status=user.settings.auto_buy,
-        min_price=user.settings.price_min,
-        max_price=user.settings.price_max,
-        supply_limit=user.settings.supply_limit,
-        cycles=user.settings.cycles,
-        quantity=user.settings.quantity,
-    ), reply_markup=controls_keyboard(user.settings.auto_buy))
+    await send_settings_menu(message, user)

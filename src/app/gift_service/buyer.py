@@ -5,7 +5,7 @@ __all__ = [
 from aiogram import Bot
 from .observer import GiftObserver
 import logging
-from app.repositories.schemas.user import UserSchema, UserSettingsSchema
+from app.repositories.schemas.user import UserSchema
 
 
 class GiftBuyer:

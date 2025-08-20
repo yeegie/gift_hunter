@@ -10,51 +10,21 @@ from app.handlers.routers import user_router
 from app.repositories.schemas.user import UserSchema
 from app.utils.ioc import ioc
 from app.gift_service.buyer import GiftBuyer
+from aiogram.fsm.context import FSMContext
 
-from app.utils.functions.build_settings import build_settings_text
-
-import asyncio
+from app.helpers.prepared_messages.send_settings_menu import send_settings_menu
 
 
 @user_router.message(Command(commands=["settings"]))
-async def show_auto_buy(message: Message, user: UserSchema):
+async def show_auto_buy(message: Message, user: UserSchema, state: FSMContext, bot: Bot):
+    await state.clear()
     buyer = ioc.get(GiftBuyer)
-
-    await message.answer(build_settings_text(
-        auto_buy_current_status=buyer.auto_buy,
-        min_price=user.settings.price_min,
-        max_price=user.settings.price_max,
-        supply_limit=user.settings.supply_limit,
-        cycles=user.settings.cycles,
-    ), reply_markup=controls_keyboard(buyer.auto_buy))
+    await send_settings_menu(message, user)
 
 
 @user_router.callback_query(ControlsCallback.filter(F.action == "auto_buy_settings"))
-async def show_auto_buy_callback(callback: CallbackQuery, bot: Bot, user: UserSchema):
+async def show_auto_buy_callback(callback: CallbackQuery, bot: Bot, user: UserSchema, state: FSMContext):
+    await state.clear()
     buyer = ioc.get(GiftBuyer)
-
-    await callback.message.edit_text(build_settings_text(
-        auto_buy_current_status=buyer.auto_buy,
-        min_price=user.settings.price_min,
-        max_price=user.settings.price_max,
-        supply_limit=user.settings.supply_limit,
-        cycles=user.settings.cycles,
-    ), reply_markup=controls_keyboard(buyer.auto_buy))
-    await bot.answer_callback_query(callback.id)
-
-
-@user_router.callback_query(ControlsCallback.filter(F.action == "auto_buy_toggle"))
-async def toggle_auto_buy(callback: CallbackQuery, bot: Bot, user: UserSchema):
-    buyer = ioc.get(GiftBuyer)
-
-    await buyer.toggle_auto_buy(user)
-
-    await callback.message.edit_text(build_settings_text(
-        auto_buy_current_status=buyer.auto_buy,
-        min_price=user.settings.price_min,
-        max_price=user.settings.price_max,
-        supply_limit=user.settings.supply_limit,
-        cycles=user.settings.cycles,
-    ), reply_markup=controls_keyboard(buyer.auto_buy))
-
+    await send_settings_menu(callback, user)
     await bot.answer_callback_query(callback.id)

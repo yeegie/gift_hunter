@@ -20,7 +20,6 @@ async def show_main_menu(message: Message, bot: Bot, user: UserSchema):
 @user_router.callback_query(ControlsCallback.filter(F.action == "auto_buy_status"))
 async def autobuy_status_label(callback: CallbackQuery, bot: Bot):
     await callback.answer("Это статус, изменение автопокупки в настройках")
-    # await bot.answer_callback_query(callback.id)
 
 
 @user_router.callback_query(ControlsCallback.filter(F.action == "back_main_menu"))

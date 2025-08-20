@@ -13,6 +13,9 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
+from app.utils.ioc import ioc
+from app.infrastructure.config import RootConfig
+
 from app.services.user.user import UserService
 from app.utils.functions.build_deposit_dialog import build_deposit_dialog_text
 

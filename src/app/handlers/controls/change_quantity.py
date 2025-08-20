@@ -7,15 +7,15 @@ from app.helpers.fabric.controls import ControlsCallback
 from app.helpers.keyboards.inline.controls.settings import controls_keyboard, to_settings
 
 from app.services.user.user import UserService
-from app.repositories.schemas.user import UserUpdateSchema, UserSchema
 from app.repositories.schemas.settings import SettingsUpdateSchema
 
 from app.handlers.routers import user_router
-from app.utils.functions.build_settings import build_settings_text
 
 from app.repositories.models.user import User
 
 from aiogram.fsm.state import StatesGroup, State
+
+from app.helpers.prepared_messages.send_settings_menu import send_settings_menu
 
 
 class ConfirmQuantityStates(StatesGroup):
@@ -36,7 +36,7 @@ async def set_quantity(callback: CallbackQuery, bot: Bot, state: FSMContext, use
 
 
 @user_router.message(ConfirmQuantityStates.value)
-async def process_custom_quantity(message: Message, state: FSMContext, user_service: UserService, user: UserSchema):
+async def process_custom_quantity(message: Message, state: FSMContext, user_service: UserService, user: User):
     try:
         amount = int(message.text)
         if amount <= 0:
@@ -54,11 +54,4 @@ async def process_custom_quantity(message: Message, state: FSMContext, user_serv
     )
 
     await state.clear()
-    await message.answer(build_settings_text(
-        auto_buy_current_status=user.settings.auto_buy,
-        min_price=user.settings.price_min,
-        max_price=user.settings.price_max,
-        supply_limit=user.settings.supply_limit,
-        cycles=user.settings.cycles,
-        quantity=user.settings.quantity,
-    ), reply_markup=controls_keyboard(user.settings.auto_buy))
+    await send_settings_menu(message, user)

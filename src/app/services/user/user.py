@@ -70,3 +70,7 @@ class UserService:
     async def get_all_users_by_notify(self, notify: bool) -> List[User]:
         users = await self.list_users()
         return [user for user in users if user.notify == notify]
+    
+    async def get_all_users_by_autobuy(self, autobuy: bool) -> List[User]:
+        users = await self.list_users()
+        return [user for user in users if user.notify == autobuy]
